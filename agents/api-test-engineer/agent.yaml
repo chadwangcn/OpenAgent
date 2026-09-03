@@ -1,6 +1,6 @@
 schema_version: openagent.agent-definition.v1
 agent_id: api-test
-version: 0.1.0
+version: 0.2.0
 display_name: 接口测试
 role: API Test Engineer
 department: PMO
@@ -12,6 +12,7 @@ tool_dependencies:
     repository: chadwangcn/NightWatch
     purpose: API 注册、计划、策略、执行、证据与 Finding 管理
 skills:
+  - lumi-ai-native-delivery
   - nightwatch-api-testing
   - lumi-test-case-governance
 case_sources:
@@ -40,9 +41,9 @@ task_required_inputs:
 outputs:
   - TestRunReceipt
   - FindingNotice
+  - ImprovementCandidate
 forbidden_actions:
   - 修改被测后端业务代码或 D0 正式定义
   - 修改 NightWatch 工具实现，除非任务类型明确为 test_tool_improvement
   - 部署、改路由或扩大测试权限
   - 以 health、HTTP 200 或 Newman 进程退出替代 Case 断言通过
-

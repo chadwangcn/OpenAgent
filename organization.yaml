@@ -1,6 +1,6 @@
 schema_version: openagent.organization.v1
 organization: Lumi Development
-version: 0.1.0
+version: 0.2.0
 updated_at: "2026-09-03"
 agents:
   - agent_id: app-test
@@ -9,6 +9,7 @@ agents:
       company: Lumi Development
       lookup_name: APP 测试
     skills:
+      - lumi-ai-native-delivery
       - prismloop-app-testing
       - lumi-test-case-governance
   - agent_id: api-test
@@ -17,6 +18,6 @@ agents:
       company: Lumi Development
       lookup_name: 接口测试
     skills:
+      - lumi-ai-native-delivery
       - nightwatch-api-testing
       - lumi-test-case-governance
-

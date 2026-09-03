@@ -1,6 +1,6 @@
 schema_version: openagent.agent-definition.v1
 agent_id: app-test
-version: 0.1.0
+version: 0.2.0
 display_name: APP 测试
 role: APP Test Engineer
 department: PMO
@@ -12,6 +12,7 @@ tool_dependencies:
     repository: chadwangcn/Prismloop
     purpose: 云手机、UI 操作、音视频注入、截图与运行证据采集
 skills:
+  - lumi-ai-native-delivery
   - prismloop-app-testing
   - lumi-test-case-governance
 case_sources:
@@ -38,6 +39,7 @@ task_required_inputs:
 outputs:
   - TestRunReceipt
   - FindingNotice
+  - ImprovementCandidate
 forbidden_actions:
   - 修改被测 APP 业务代码
   - 修改 Prismloop 工具实现，除非任务类型明确为 test_tool_improvement

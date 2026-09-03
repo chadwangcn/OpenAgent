@@ -1,12 +1,13 @@
 schema_version: openagent.workflow.v1
 workflow_id: api-test-lifecycle
-version: 0.1.0
+version: 0.2.0
 states:
   - intake
   - contract_review
   - environment_ready
   - running
   - analyzing
+  - evidence_ready
   - in_review
   - retest_pending
   - accepted
@@ -25,8 +26,11 @@ transitions:
     to: analyzing
     requires: [terminal_execution_result]
   - from: analyzing
+    to: evidence_ready
+    requires: [case_assertions_evaluated, self_check_completed, failure_classification]
+  - from: evidence_ready
     to: in_review
-    requires: [test_run_receipt, evidence_bundle, failure_classification]
+    requires: [test_run_receipt, evidence_bundle, subject_and_case_pins_preserved]
   - from: in_review
     to: retest_pending
     requires: [fix_delivery_notice]
@@ -35,11 +39,21 @@ transitions:
     requires: [new_deployed_subject_digest, same_or_explicitly_updated_case_set]
   - from: in_review
     to: accepted
-    requires: [all_required_cases_passed, independent_evidence_complete]
+    requires: [all_required_cases_passed, independent_evidence_complete, named_acceptance_record]
+artifacts:
+  input: [task_intent, api_contract_pin, case_set_pin, deployed_subject_digest, environment_ref]
+  execution: [terminal_execution_result, evidence_bundle, test_run_receipt]
+  feedback: [finding_notice, improvement_candidate]
+paperclip_status_mapping:
+  ready: todo
+  active: in_progress
+  evidence_ready: in_review
+  waiting_dependency_or_authority: backlog_with_blocker_notice
+  terminal: done_after_named_acceptance_only
 stop_conditions:
   - contract_digest_mismatch
   - missing_required_input
   - missing_secret_binding
   - environment_policy_denied
   - evidence_integrity_failure
-
+  - subject_or_case_changed_during_run

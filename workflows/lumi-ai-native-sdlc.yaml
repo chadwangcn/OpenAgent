@@ -1,0 +1,98 @@
+schema_version: openagent.organization-workflow.v1
+workflow_id: lumi-ai-native-sdlc
+version: 0.2.0
+purpose: 以可验证产物驱动 Lumi 数字员工从意图到上线验收，并把运行反馈回流到下一轮改进。
+principles:
+  - 每个阶段必须产生下一阶段可读取的版本化产物
+  - 实施者必须自证但不得自批，独立验证使用不可变 subject pin
+  - Paperclip 状态不得代替 Git、CI、OCI、部署或验收证据
+  - 只有满足当前 delivery_class 的终止门才可 done
+  - 失败必须给出 blocker_code、证据、唯一 next_owner 和 required_action
+  - 重复任务先按 delivery_key 查重，禁止平行派发和责任回环
+systems_of_record:
+  organization_and_agent_product: OpenAgent Git repository
+  cross_system_contract: Lumi-Agent-Mind D0 Git repository
+  visual_design: pinned Figma file and version
+  task_state_and_evidence_index: Paperclip
+  implementation_and_plan: target Git repository
+  build_and_oci: GitHub Actions and OCI registry digest
+  deployment: SRE DeploymentReceipt
+  app_cases: Prismloop cases index at a pinned commit
+  api_cases: NightWatch cases index at a pinned commit
+delivery_classes:
+  component_implementation:
+    terminal_gate: production_acceptance
+  test_execution:
+    terminal_gate: named_test_acceptance
+  agent_product_change:
+    terminal_gate: agent_eval_and_paperclip_sync
+  test_tool_improvement:
+    terminal_gate: tool_release_and_regression
+  case_change:
+    terminal_gate: case_review_and_baseline
+stages:
+  - id: intent_and_scope
+    owner: request_originator_or_product_owner
+    requires: [business_outcome, affected_users_and_systems, constraints, out_of_scope, success_measure]
+    produces: [IntentRecord]
+  - id: contract_and_design
+    owner: named_contract_or_design_owner
+    requires: [accepted_intent, exact_source_pins, policy_and_risk_review]
+    produces: [ContractOrDesignRecord, AcceptanceCriteria]
+  - id: plan_and_dispatch
+    owner: PM
+    requires: [accepted_contract_or_design, delivery_key, dependency_dag, named_owner, verification_commands]
+    produces: [WorkPackage, DispatchReceipt]
+  - id: implementation_and_self_check
+    owner: component_or_tool_owner
+    requires: [clean_isolated_workspace, exact_input_pins]
+    produces: [source_commit_and_tree, SelfTestReceipt, DeliveryNotice]
+  - id: independent_review_and_test
+    owner: named_reviewer_or_test_engineer
+    requires: [immutable_subject_pin, pinned_case_set, fresh_review_context]
+    produces: [ReviewReceipt, TestRunReceipt, FindingNotice]
+  - id: release_candidate
+    owner: component_owner_and_PM
+    requires: [approved_PR, main_commit_readback, successful_CI]
+    produces: [PRRef, MainCommitRef, CIRunRef, OCIDigest]
+  - id: authorized_deploy
+    owner: SRE
+    requires: [exact_OCI_digest, named_environment, explicit_delivery_operation_authority]
+    produces: [DeploymentReceipt, RuntimeDigestReadback, HealthEvidence]
+  - id: production_acceptance
+    owner: named_independent_acceptor
+    requires: [deployment_receipt, external_IO_or_business_cases]
+    produces: [AcceptanceNotice]
+  - id: maintain_and_improve
+    owner: service_owner_and_agent_operations
+    requires: [runtime_observation_or_delivery_metrics]
+    produces: [ImprovementCandidate]
+    routes:
+      - agent_definition
+      - skill_or_workflow
+      - tool
+      - case
+      - product_or_component
+      - environment
+promotion_rules:
+  - 只有上游产物存在、pin 可读回且验收条件满足时才提升下一阶段
+  - Worker 自测或 DeliveryNotice 只能进入 in_review，不能直接 done
+  - PR 合并后必须独立读取 main commit，不能使用分支 commit 推断
+  - OCI 必须记录完整 digest 和成功 CI run，tag 不能代替 digest
+  - 部署必须使用已批准 digest，并读取运行时 digest 后再进入生产验收
+  - 线上缺陷和重复流程问题回流为 ImprovementCandidate，不在原任务中扩大修改范围
+paperclip_state_policy:
+  backlog: 依赖、环境或授权未满足；必须附 BlockerNotice 和下一责任人
+  todo: 所有依赖已满足且当前唯一 Owner 可以立即执行
+  in_progress: 有活跃 run，且最近回执说明正在执行的阶段
+  in_review: Owner 产物已提交，等待独立 Review、测试、发布或验收门
+  done: delivery_class 的 terminal_gate 已有具名、可读回证据
+  cancelled: 明确撤销、去重或范围废弃，并保留原因和替代任务引用
+feedback_metrics:
+  - lead_time_by_stage
+  - blocker_time_by_code_and_owner
+  - first_pass_ci_rate
+  - first_pass_case_rate
+  - rework_cycles
+  - escaped_defects
+  - time_to_convert_incident_to_eval_or_case

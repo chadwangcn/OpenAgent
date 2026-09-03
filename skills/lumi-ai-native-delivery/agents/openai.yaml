@@ -1,0 +1,4 @@
+interface:
+  display_name: Lumi AI-native Delivery
+  short_description: Evidence-driven Lumi delivery gates and feedback loop
+  default_prompt: Apply $lumi-ai-native-delivery to keep this task moving through the correct evidence gate without scope drift.
