@@ -1,0 +1,22 @@
+schema_version: openagent.organization.v1
+organization: Lumi Development
+version: 0.1.0
+updated_at: "2026-09-03"
+agents:
+  - agent_id: app-test
+    definition: agents/app-test-engineer/agent.yaml
+    paperclip:
+      company: Lumi Development
+      lookup_name: APP 测试
+    skills:
+      - prismloop-app-testing
+      - lumi-test-case-governance
+  - agent_id: api-test
+    definition: agents/api-test-engineer/agent.yaml
+    paperclip:
+      company: Lumi Development
+      lookup_name: 接口测试
+    skills:
+      - nightwatch-api-testing
+      - lumi-test-case-governance
+

@@ -1,0 +1,4 @@
+interface:
+  display_name: "NightWatch API 测试"
+  short_description: "通过 NightWatch 执行 API 黑盒用例并生成证据"
+  default_prompt: "使用 $nightwatch-api-testing 执行指定 API Case 并生成脱敏测试回执。"

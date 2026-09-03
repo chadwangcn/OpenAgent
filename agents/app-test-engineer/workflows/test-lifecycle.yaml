@@ -1,0 +1,44 @@
+schema_version: openagent.workflow.v1
+workflow_id: app-test-lifecycle
+version: 0.1.0
+states:
+  - intake
+  - preflight
+  - environment_ready
+  - running
+  - analyzing
+  - in_review
+  - retest_pending
+  - accepted
+  - blocked
+transitions:
+  - from: intake
+    to: preflight
+    requires: [task_inputs_complete]
+  - from: preflight
+    to: environment_ready
+    requires: [figma_resolved, case_set_pinned, apk_digest_verified, prismloop_capabilities_verified]
+  - from: environment_ready
+    to: running
+    requires: [device_lease_acquired]
+  - from: running
+    to: analyzing
+    requires: [terminal_tool_result]
+  - from: analyzing
+    to: in_review
+    requires: [test_run_receipt, evidence_index, failure_classification]
+  - from: in_review
+    to: retest_pending
+    requires: [fix_delivery_notice]
+  - from: retest_pending
+    to: running
+    requires: [new_subject_digest, same_or_explicitly_updated_case_set]
+  - from: in_review
+    to: accepted
+    requires: [all_required_cases_passed, independent_evidence_complete]
+stop_conditions:
+  - missing_required_input
+  - missing_secret_binding
+  - capability_unavailable
+  - evidence_integrity_failure
+

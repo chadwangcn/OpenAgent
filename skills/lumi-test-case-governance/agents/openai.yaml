@@ -1,0 +1,4 @@
+interface:
+  display_name: "Lumi 测试用例治理"
+  short_description: "维护可追踪、可复现、与需求契约绑定的测试 Case"
+  default_prompt: "使用 $lumi-test-case-governance 设计或更新可追踪的 Lumi 测试 Case。"

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Prismloop APP 测试"
+  short_description: "通过 Prismloop 执行云手机 APP 测试并归集证据"
+  default_prompt: "使用 $prismloop-app-testing 执行指定 APP Case 并生成脱敏测试回执。"

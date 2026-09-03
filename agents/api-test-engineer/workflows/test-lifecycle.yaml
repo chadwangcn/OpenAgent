@@ -1,0 +1,45 @@
+schema_version: openagent.workflow.v1
+workflow_id: api-test-lifecycle
+version: 0.1.0
+states:
+  - intake
+  - contract_review
+  - environment_ready
+  - running
+  - analyzing
+  - in_review
+  - retest_pending
+  - accepted
+  - blocked
+transitions:
+  - from: intake
+    to: contract_review
+    requires: [task_inputs_complete, contract_digest_verified, case_set_pinned]
+  - from: contract_review
+    to: environment_ready
+    requires: [case_contract_mapping_valid, environment_policy_approved]
+  - from: environment_ready
+    to: running
+    requires: [credential_lease_ready, target_reachable]
+  - from: running
+    to: analyzing
+    requires: [terminal_execution_result]
+  - from: analyzing
+    to: in_review
+    requires: [test_run_receipt, evidence_bundle, failure_classification]
+  - from: in_review
+    to: retest_pending
+    requires: [fix_delivery_notice]
+  - from: retest_pending
+    to: running
+    requires: [new_deployed_subject_digest, same_or_explicitly_updated_case_set]
+  - from: in_review
+    to: accepted
+    requires: [all_required_cases_passed, independent_evidence_complete]
+stop_conditions:
+  - contract_digest_mismatch
+  - missing_required_input
+  - missing_secret_binding
+  - environment_policy_denied
+  - evidence_integrity_failure
+
