@@ -1,6 +1,6 @@
 schema_version: openagent.organization.v1
 organization: Lumi Development
-version: 0.2.0
+version: 0.3.0
 updated_at: "2026-09-03"
 agents:
   - agent_id: app-test

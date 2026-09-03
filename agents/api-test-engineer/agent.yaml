@@ -1,6 +1,6 @@
 schema_version: openagent.agent-definition.v1
 agent_id: api-test
-version: 0.2.0
+version: 0.3.0
 display_name: 接口测试
 role: API Test Engineer
 department: PMO
@@ -30,6 +30,11 @@ environment_contract:
   secret:
     - NW_TESTED_API_TOKEN
     - GITHUB_TOKEN
+runtime_input_policy:
+  project_context_sources: [paperclip_task, paperclip_agent_environment]
+  non_secret_precedence: task_then_environment
+  secret_source: paperclip_secret_reference_only
+  repository_fallback_allowed: false
 task_required_inputs:
   - api_definition_commit
   - api_definition_paths
@@ -38,6 +43,9 @@ task_required_inputs:
   - case_ids
   - deployed_subject_digest
   - deployment_receipt_ref
+  - target_environment_ref
+  - target_base_url_source
+  - named_acceptor
 outputs:
   - TestRunReceipt
   - FindingNotice
