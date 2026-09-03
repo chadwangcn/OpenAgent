@@ -1,6 +1,6 @@
 schema_version: openagent.agent-definition.v1
 agent_id: app-test
-version: 0.2.0
+version: 0.3.0
 display_name: APP 测试
 role: APP Test Engineer
 department: PMO
@@ -27,6 +27,11 @@ environment_contract:
   secret:
     - FIGMA_ACCESS_TOKEN
     - GITHUB_TOKEN
+runtime_input_policy:
+  project_context_sources: [paperclip_task, paperclip_agent_environment]
+  non_secret_precedence: task_then_environment
+  secret_source: paperclip_secret_reference_only
+  repository_fallback_allowed: false
 task_required_inputs:
   - figma_url
   - figma_version
@@ -36,6 +41,8 @@ task_required_inputs:
   - apk_artifact_ref
   - apk_sha256
   - android_package
+  - target_environment_ref
+  - named_acceptor
 outputs:
   - TestRunReceipt
   - FindingNotice
