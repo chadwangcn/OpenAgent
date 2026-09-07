@@ -1,5 +1,12 @@
 # 版本记录
 
+## 0.4.0 - 2026-09-08
+
+- 将 `lumi-ai-native-delivery` 扩展为版本化组件交付规则：版本/Feature 真源归组件仓，Paperclip 仅保存控制面状态与回执索引。
+- 固化精确 main baseline、一个活跃写任务对应一个分支/worktree/PR、PR 独立验证与合并后回归。
+- 引入 `deployable_service`、`client_library`、`documentation`、`test_tool` release profile；SDK/AAR 等客户端制品不再被错误要求 OCI 或服务端部署。
+- 将无有效回执的长时间运行定义为 `stalled_runtime`，避免 Paperclip 任务无声滞留 `in_progress`。
+
 ## 0.3.0 - 2026-09-03
 
 - 重新定义 APP 测试与 API 测试岗位，补齐 Task 输入、环境输入、三类工作模式、协作路由和完成条件。
