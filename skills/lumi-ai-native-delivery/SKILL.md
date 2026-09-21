@@ -7,16 +7,21 @@ description: Govern Lumi delivery as an evidence-driven AI-native SDLC loop. Use
 
 Use `workflows/lumi-ai-native-sdlc.yaml` in the OpenAgent repository as the organization workflow. Apply the narrower repository `AGENTS.md`, task package, D0 contract, Figma pin, tool Skill, and Case rules at the same time; this Skill does not override their scope or authority.
 
+For a versioned code component, also read [component-version-feature-delivery.md](references/component-version-feature-delivery.md). It defines the repository-owned version plan, one-branch/one-worktree rule, PR gates and release profiles. Do not use it to move internal component planning into D0 or Paperclip.
+
 ## Start from a bounded delivery record
 
 Before acting, identify:
 
 - `delivery_class`, business outcome, in-scope and out-of-scope work;
 - target repository or system, exact contract/design/Case pins and environment;
+- `release_profile`: `deployable_service`, `client_library`, `documentation`, or `test_tool`;
+- for a versioned code component: target version, Feature ID, exact `origin/main` baseline commit/tree,
+  one Feature branch, one isolated worktree and one planned PR;
 - `delivery_key` used to query existing Paperclip work before creating or reassigning anything;
 - current gate, required evidence, one Owner, one `next_owner`, and the named terminal acceptor.
 
-If any field needed for the current gate is missing, emit a `BlockerNotice`; do not guess, use a floating branch, or create a parallel task.
+If any field needed for the current gate is missing, emit a `BlockerNotice`; do not guess, use a floating branch, reuse a dirty worktree, or create a parallel task.
 
 ## Move by artifacts, not claims
 
@@ -27,9 +32,10 @@ Use this chain when the selected `delivery_class` requires the stage:
 3. `WorkPackage` and `DispatchReceipt`: dependency DAG, exact pins, verification and bounded Owner.
 4. `DeliveryNotice`: source commit/tree plus literal self-test output from the implementation Owner.
 5. Independent `ReviewReceipt` or `TestRunReceipt` against an immutable subject and pinned Case set.
-6. `PRRef`, main readback, successful CI run and full OCI digest.
-7. Explicitly authorized SRE deployment of that digest and a `DeploymentReceipt` with runtime readback.
-8. External I/O or business acceptance by the named independent acceptor.
+6. `PRRef`, main readback, successful CI run and the candidate required by the release profile.
+7. For `deployable_service` only: explicitly authorized SRE deployment of that OCI digest and a
+   `DeploymentReceipt` with runtime digest readback.
+8. External I/O, real-device, consumer, business or runtime acceptance selected by the release profile.
 9. `ImprovementCandidate` for repeated defects, latency, drift or capability gaps.
 
 An implementation Owner must verify its own work, but its evidence only advances the task to `in_review`. The same Owner cannot supply the independent approval that makes its work terminal.
@@ -44,6 +50,25 @@ An implementation Owner must verify its own work, but its evidence only advances
 - `cancelled`: only for explicit withdrawal, deduplication or supersession, with the replacement reference.
 
 Do not treat a queued-run cancellation caused by reassignment as a product failure. Preserve the run record, identify the current Owner, and wake only when the task is actually ready.
+
+An active run with no current-gate Receipt by the task's observation deadline is not evidence of progress.
+Keep the task blocked or record `stalled_runtime` with its last safe run evidence; do not silently leave it
+`in_progress` or create a replacement task.
+
+## Match the release profile
+
+- `deployable_service`: candidate is a full OCI digest plus CI evidence; SRE deployment requires a separately
+  authorized `delivery_operation`; runtime digest readback precedes production acceptance.
+- `client_library`: candidate is the versioned library/package (for Android, core and Adapter AARs), SHA256SUMS,
+  API inventory and consumer verification. There is no OCI or service deployment gate. Real-device or real-service
+  acceptance remains required when the Feature makes that claim.
+- `documentation`: candidate is Git-tracked source plus validate/build manifest. Publishing is a separate SRE
+  operation and does not turn a source build into a deployed site claim.
+- `test_tool`: candidate is the tool version plus regression evidence. It enters deployment only if the tool itself
+  has an authorized managed runtime.
+
+Never add an OCI, deployment or production-acceptance requirement to a client library merely because another
+component in the same initiative is a deployable service.
 
 ## Diagnose and route failures
 
